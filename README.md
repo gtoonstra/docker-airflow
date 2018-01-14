@@ -6,6 +6,9 @@ Based on "puckel/docker-airflow" available here:
 
     https://github.com/puckel/docker-airflow
 
+This repository only serves as a means to support the "etl-with-airflow" project,
+which uses this image in the Hive example
+
 ## Installation
 
 Pull the image from the Docker repository.
