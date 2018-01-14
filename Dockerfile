@@ -5,14 +5,14 @@
 # SOURCE: https://github.com/puckel/docker-airflow
 
 FROM debian:jessie
-MAINTAINER Puckel_
+MAINTAINER gtoonstra
 
 # Never prompts the user for choices on installation/configuration of packages
 ENV DEBIAN_FRONTEND noninteractive
 ENV TERM linux
 
 # Airflow
-ARG AIRFLOW_VERSION=1.8.1
+ARG AIRFLOW_VERSION=1.8.0
 ARG AIRFLOW_HOME=/usr/local/airflow
 ARG HADOOP_DIR=/usr/local/hadoop
 ARG HIVE_DIR=/usr/local/hive
