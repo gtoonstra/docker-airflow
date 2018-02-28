@@ -1,4 +1,4 @@
-# VERSION 1.8.1
+# VERSION 1.9.0
 # AUTHOR: Matthieu "Puckel_" Roisil
 # DESCRIPTION: Basic Airflow container
 # BUILD: docker build --rm -t puckel/docker-airflow .
@@ -12,7 +12,7 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV TERM linux
 
 # Airflow
-ARG AIRFLOW_VERSION=1.8.1
+ARG AIRFLOW_VERSION=1.9.0
 ARG AIRFLOW_HOME=/usr/local/airflow
 ARG HADOOP_DIR=/usr/local/hadoop
 ARG HIVE_DIR=/usr/local/hive
@@ -69,10 +69,11 @@ RUN set -ex \
     && pip install pyOpenSSL \
     && pip install ndg-httpsclient \
     && pip install pyasn1 \
-    && pip install thrift_sasl==0.2.1 \
+    && pip install thrift_sasl==0.3.0 \
     && pip install apache-airflow[crypto,celery,gcp_api,postgres,hive,hdfs,jdbc]==$AIRFLOW_VERSION \
     && pip install celery[redis]==3.1.17 \
-    && pip install impyla==0.13.8 \
+    && pip install six==1.11.0 \
+    && pip install thrift==0.9.3 \
     && apt-get remove --purge -yqq $buildDeps \
     && apt-get clean \
     && rm -rf \
