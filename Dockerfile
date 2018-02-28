@@ -12,7 +12,7 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV TERM linux
 
 # Airflow
-ARG AIRFLOW_VERSION=1.8.0
+ARG AIRFLOW_VERSION=1.8.1
 ARG AIRFLOW_HOME=/usr/local/airflow
 ARG HADOOP_DIR=/usr/local/hadoop
 ARG HIVE_DIR=/usr/local/hive
@@ -42,6 +42,7 @@ RUN set -ex \
         libblas-dev \
         liblapack-dev \
         libpq-dev \
+        libgsasl7-dev \
         git \
     ' \
     && apt-get update -yqq \
@@ -68,8 +69,10 @@ RUN set -ex \
     && pip install pyOpenSSL \
     && pip install ndg-httpsclient \
     && pip install pyasn1 \
-    && pip install apache-airflow[crypto,celery,postgres,hive,hdfs,jdbc]==$AIRFLOW_VERSION \
+    && pip install thrift_sasl==0.2.1 \
+    && pip install apache-airflow[crypto,celery,gcp_api,postgres,hive,hdfs,jdbc]==$AIRFLOW_VERSION \
     && pip install celery[redis]==3.1.17 \
+    && pip install impyla==0.13.8 \
     && apt-get remove --purge -yqq $buildDeps \
     && apt-get clean \
     && rm -rf \
