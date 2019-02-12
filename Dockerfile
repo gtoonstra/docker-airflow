@@ -1,4 +1,4 @@
-# VERSION 1.9.0
+# VERSION 1.0
 # AUTHOR: Matthieu "Puckel_" Roisil
 # DESCRIPTION: Basic Airflow container
 # BUILD: docker build --rm -t puckel/docker-airflow .
@@ -30,6 +30,8 @@ ENV PATH $PATH:$HIVE_DIR/bin:$HADOOP_DIR/bin
 ENV HADOOP_HOME $HADOOP_DIR
 ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64
 ENV HADOOP_OPTS "$HADOOP_OPTS -Djava.library.path=$HADOOP_HOME/lib/native"
+ENV SQOOP_HOME=/usr/lib/sqoop
+ENV PATH $PATH:$SQOOP_HOME/bin
 
 RUN set -ex \
     && buildDeps=' \
@@ -76,18 +78,35 @@ RUN set -ex \
     && pip install thrift==0.9.3 \
     && apt-get remove --purge -yqq $buildDeps \
     && apt-get clean \
+    && mkdir -p /tmp/hadoop \
+    && (cd /tmp/hadoop; curl -O https://archive.cloudera.com/cdh5/cdh/5/hadoop-2.6.0-cdh5.11.0.tar.gz) \
+    && (cd /tmp/hadoop; tar -zxf hadoop-2.6.0-cdh5.11.0.tar.gz) \
+    && (cd /tmp/hadoop; mv hadoop-2.6.0-cdh5.11.0/* ${HADOOP_DIR}) \
+    && mkdir -p /tmp/hive \
+    && (cd /tmp/hive; curl -O https://archive.cloudera.com/cdh5/cdh/5/hive-1.1.0-cdh5.11.0.tar.gz) \
+    && (cd /tmp/hive; tar -zxf hive-1.1.0-cdh5.11.0.tar.gz) \
+    && (cd /tmp/hive; mv hive-1.1.0-cdh5.11.0/* ${HIVE_DIR}) \
+    && mkdir -p /tmp/sqoop \
+    && (cd /tmp/sqoop; curl -O http://apache.40b.nl/sqoop/1.4.7/sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz) \
+    && (cd /tmp/sqoop; tar -zxf sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz) \
+    && mkdir -p /usr/lib/sqoop \
+    && (cd /tmp/sqoop/sqoop-1.4.7.bin__hadoop-2.6.0; mv ./* /usr/lib/sqoop) \
     && rm -rf \
         /var/lib/apt/lists/* \
         /tmp/* \
         /var/tmp/* \
         /usr/share/man \
         /usr/share/doc \
-        /usr/share/doc-base
+        /usr/share/doc-base \
+        /tmp/hadoop \
+        /tmp/hive \
+        /tmp/sqoop
 
 COPY script/entrypoint.sh /entrypoint.sh
 COPY config/airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
 
 RUN chown -R airflow: ${AIRFLOW_HOME}
+RUN chown -R airflow: ${HADOOP_HOME}
 
 EXPOSE 8080 5555 8793
 
